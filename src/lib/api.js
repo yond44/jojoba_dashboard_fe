@@ -8,7 +8,6 @@ class ApiError extends Error {
 }
 
 function buildUrl(path, params) {
-  // If API_BASE_URL is absolute, use it directly
   const baseUrl = API_BASE_URL.startsWith("http")
     ? API_BASE_URL
     : `${window.location.origin}${API_BASE_URL}`;
@@ -23,9 +22,17 @@ function buildUrl(path, params) {
 }
 
 async function request(path, { params, method = "GET", body } = {}) {
+  const headers = {
+    "ngrok-skip-browser-warning": "true", // ← Add ngrok header
+  };
+
+  if (body) {
+    headers["Content-Type"] = "application/json";
+  }
+
   const response = await fetch(buildUrl(path, params), {
     method,
-    headers: body ? { "Content-Type": "application/json" } : undefined,
+    headers,
     body: body ? JSON.stringify(body) : undefined,
   });
 
