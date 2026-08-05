@@ -7,9 +7,10 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      "/api": {
+      "/api/v1": {
         target: "https://throat-perfectly-sludge.ngrok-free.dev",
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/v1/, "/api/v1"),
       },
     },
   },

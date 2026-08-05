@@ -8,13 +8,18 @@ class ApiError extends Error {
 }
 
 function buildUrl(path, params) {
-  const url = new URL(`${API_BASE_URL}${path}`, window.location.origin);
+  // If API_BASE_URL is absolute, use it directly
+  const baseUrl = API_BASE_URL.startsWith("http")
+    ? API_BASE_URL
+    : `${window.location.origin}${API_BASE_URL}`;
+
+  const url = new URL(`${baseUrl}${path}`);
   Object.entries(params || {}).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== "") {
       url.searchParams.set(key, String(value));
     }
   });
-  return url.toString().replace(window.location.origin, "");
+  return url.toString();
 }
 
 async function request(path, { params, method = "GET", body } = {}) {
@@ -33,7 +38,9 @@ async function request(path, { params, method = "GET", body } = {}) {
 
   if (!response.ok) {
     const detail =
-      payload?.detail || payload?.error || `Permintaan gagal (${response.status})`;
+      payload?.detail ||
+      payload?.error ||
+      `Permintaan gagal (${response.status})`;
     throw new ApiError(detail, response.status);
   }
 
