@@ -22,17 +22,9 @@ function buildUrl(path, params) {
 }
 
 async function request(path, { params, method = "GET", body } = {}) {
-  const headers = {
-    "ngrok-skip-browser-warning": "true", // ← Add ngrok header
-  };
-
-  if (body) {
-    headers["Content-Type"] = "application/json";
-  }
-
   const response = await fetch(buildUrl(path, params), {
     method,
-    headers,
+    headers: body ? { "Content-Type": "application/json" } : undefined,
     body: body ? JSON.stringify(body) : undefined,
   });
 
